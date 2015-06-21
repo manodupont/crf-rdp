@@ -7,15 +7,9 @@
 // use this if you want to recursively match all subfolders:
 // 'test/spec/**/*.js'
 
+var path = require('path');
+
 module.exports = function (grunt) {
-
-    var express = require('express');
-    var app = express();
-
-// respond with "hello world" when a GET request is made to the homepage
-    app.get('/', function(req, res) {
-        res.send('hello world');
-    });
 
     // Load grunt tasks automatically
     require('load-grunt-tasks')(grunt);
@@ -28,6 +22,8 @@ module.exports = function (grunt) {
         app: require('./bower.json').appPath || 'app',
         dist: 'dist'
     };
+
+
 
     // Define the configuration for all the tasks
     grunt.initConfig({
@@ -47,6 +43,10 @@ module.exports = function (grunt) {
                 options: {
                     livereload: '<%= connect.options.livereload %>'
                 }
+            },
+            less: {
+                files: "<%= yeoman.app %>/{,*/}*.less",
+                tasks: ["less"]
             },
             jsTest: {
                 files: ['test/spec/{,*/}*.js'],
@@ -164,7 +164,7 @@ module.exports = function (grunt) {
             },
             server: {
                 options: {
-                    map: true,
+                    map: true
                 },
                 files: [{
                     expand: true,
@@ -180,6 +180,22 @@ module.exports = function (grunt) {
                     src: '{,*/}*.css',
                     dest: '.tmp/styles/'
                 }]
+            }
+        },
+
+        less: {
+            development: {
+                options: {
+                    paths: ["styles/css"]
+                },
+                files: {"app/styles/main.css": "app/styles/main.less"}
+            },
+            production: {
+                options: {
+                    paths: ["styles/css"],
+                    cleancss: true
+                },
+                files: {"app/styles/main.css": "app/styles/main.less"}
             }
         },
 
@@ -338,15 +354,24 @@ module.exports = function (grunt) {
         },
 
         express: {
-            options: {
-                // Override defaults here
-            },
-            dev: {
+            custom: {
                 options: {
-                    script: 'server/server.js'
+                    port: 9000,
+                    bases: 'public',
+                    script: path.resolve('server/server.js')
                 }
             }
         },
+
+        /*express: {
+            server: {
+                options: {
+                    port: 9000,
+                    bases: 'public',
+                    script: path.resolve('server/server.js')
+                }
+            }
+        },*/
 
         // Copies remaining files to places other tasks can use
         copy: {
@@ -409,6 +434,8 @@ module.exports = function (grunt) {
     });
 
 
+    grunt.loadNpmTasks('grunt-contrib-less');
+
     grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
         if (target === 'dist') {
             return grunt.task.run(['build', 'connect:dist:keepalive']);
@@ -420,6 +447,8 @@ module.exports = function (grunt) {
             'concurrent:server',
             'autoprefixer:server',
             'connect:livereload',
+            'less:development',
+            'express',
             'watch',
         ]);
     });
@@ -435,6 +464,7 @@ module.exports = function (grunt) {
         'concurrent:test',
         'autoprefixer',
         'connect:test',
+        'less:development',
         'karma'
     ]);
 
@@ -448,6 +478,7 @@ module.exports = function (grunt) {
         'ngAnnotate',
         'copy:dist',
         'cdnify',
+        'less:development',
         'cssmin',
         'uglify',
         'filerev',
