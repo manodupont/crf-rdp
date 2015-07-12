@@ -4,6 +4,7 @@
   "dependencies": {
     "angular": "^1.4.1",
     "bootstrap": "^3.3.5",
+    "angular-bootstrap": "^1.4.1",
     "angular-animate": "^1.4.1",
     "angular-cookies": "^1.4.1",
     "angular-resource": "^1.4.1",
@@ -19,5 +20,17 @@
   "moduleName": "crfRdpApp",
   "resolutions": {
     "angular": "^1.4.1"
-  }
+  },
+  "homepage": "https://github.com/manodupont/crf-rdp",
+  "authors": [
+    "Mano <manodupont@hotmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
 }

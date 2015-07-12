@@ -10,13 +10,15 @@
  */
 angular
     .module('crfRdpApp', [
+        'ui.bootstrap',
         'ngAnimate',
         'ngCookies',
         'ngResource',
         'ngRoute',
         'ngSanitize',
         'ngTouch',
-        'ngMap'
+        'ngMap',
+
     ])
     .config(function ($routeProvider) {
         $routeProvider

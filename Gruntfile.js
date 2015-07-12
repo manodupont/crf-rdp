@@ -24,7 +24,6 @@ module.exports = function (grunt) {
     };
 
 
-
     // Define the configuration for all the tasks
     grunt.initConfig({
 
@@ -68,6 +67,13 @@ module.exports = function (grunt) {
                     '.tmp/styles/{,*/}*.css',
                     '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
                 ]
+            },
+            express: {
+                files: ['server/**/*.js'],
+                tasks: ['express:dev'],
+                options: {
+                    spawn: false // Without this option specified express won't be reloaded
+                }
             }
         },
 
@@ -262,7 +268,8 @@ module.exports = function (grunt) {
                 assetsDirs: [
                     '<%= yeoman.dist %>',
                     '<%= yeoman.dist %>/images',
-                    '<%= yeoman.dist %>/styles'
+                    '<%= yeoman.dist %>/styles',
+                    '<%= yeoman.dist %>/fonts'
                 ]
             }
         },
@@ -353,25 +360,38 @@ module.exports = function (grunt) {
             }
         },
 
+
         express: {
-            custom: {
+            options: {
+                // Override defaults here
+            },
+            dev: {
                 options: {
-                    port: 9000,
-                    bases: 'public',
-                    script: path.resolve('server/server.js')
+                    script: 'server/server.js'
+                }
+            },
+            prod: {
+                options: {
+                    script: 'server/server.js',
+                    node_env: 'production'
+                }
+            },
+            test: {
+                options: {
+                    script: 'server/server.js'
                 }
             }
         },
 
         /*express: {
-            server: {
-                options: {
-                    port: 9000,
-                    bases: 'public',
-                    script: path.resolve('server/server.js')
-                }
-            }
-        },*/
+         server: {
+         options: {
+         port: 9000,
+         bases: 'public',
+         script: path.resolve('server/server.js')
+         }
+         }
+         },*/
 
         // Copies remaining files to places other tasks can use
         copy: {
@@ -387,7 +407,7 @@ module.exports = function (grunt) {
                         '*.html',
                         'views/{,*/}*.html',
                         'images/{,*/}*.{webp}',
-                        'styles/fonts/{,*/}*.*'
+                        'fonts/{,*/}*.*'
                     ]
                 }, {
                     expand: true,
@@ -435,10 +455,11 @@ module.exports = function (grunt) {
 
 
     grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-express-server');
 
     grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
         if (target === 'dist') {
-            return grunt.task.run(['build', 'connect:dist:keepalive']);
+            return grunt.task.run(['build', 'express:dist']);
         }
 
         grunt.task.run([
@@ -448,7 +469,7 @@ module.exports = function (grunt) {
             'autoprefixer:server',
             'connect:livereload',
             'less:development',
-            'express',
+            'express:dev',
             'watch',
         ]);
     });
@@ -464,6 +485,7 @@ module.exports = function (grunt) {
         'concurrent:test',
         'autoprefixer',
         'connect:test',
+        'express:test',
         'less:development',
         'karma'
     ]);
